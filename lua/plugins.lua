@@ -132,12 +132,10 @@ packer.startup {
     use { "EdenEast/nightfox.nvim", opt = true }
     use { "rebelot/kanagawa.nvim", opt = true }
     use { "catppuccin/nvim", as = "catppuccin", opt = true }
-    use({ "rose-pine/neovim", as = 'rose-pine', opt = true })
+    use { "rose-pine/neovim", as = "rose-pine", opt = true }
     use { "olimorris/onedarkpro.nvim", opt = true }
     use { "tanvirtin/monokai.nvim", opt = true }
     use { "marko-cerovac/material.nvim", opt = true }
-
-    use { "kyazdani42/nvim-web-devicons", event = "VimEnter" }
 
     use {
       "nvim-lualine/lualine.nvim",
@@ -146,14 +144,19 @@ packer.startup {
       config = [[require('config.statusline')]],
     }
 
-    use { "akinsho/bufferline.nvim", event = "VimEnter",
+    use {
+      "akinsho/bufferline.nvim",
+      event = "VimEnter",
       cond = firenvim_not_active,
-      config = [[require('config.bufferline')]] }
+      config = [[require('config.bufferline')]],
+    }
 
     -- fancy start screen
-    use { "glepnir/dashboard-nvim", event = "VimEnter",
+    use {
+      "glepnir/dashboard-nvim",
+      event = "VimEnter",
       cond = firenvim_not_active,
-      config = [[require('config.dashboard-nvim')]]
+      config = [[require('config.dashboard-nvim')]],
     }
 
     use {
@@ -209,13 +212,13 @@ packer.startup {
     use { "simnalamburt/vim-mundo", cmd = { "MundoToggle", "MundoShow" } }
 
     -- better UI for some nvim actions
-    use {'stevearc/dressing.nvim'}
+    use { "stevearc/dressing.nvim" }
 
     -- Manage your yank history
-    use({
+    use {
       "gbprod/yanky.nvim",
-      config = [[require('config.yanky')]]
-    })
+      config = [[require('config.yanky')]],
+    }
 
     -- Handy unix command inside Vim (Rename, Move etc.)
     use { "tpope/vim-eunuch", cmd = { "Rename", "Delete" } }
@@ -358,14 +361,40 @@ packer.startup {
 
     -- file explorer
     use {
-      "kyazdani42/nvim-tree.lua",
-      requires = { "kyazdani42/nvim-web-devicons" },
-      config = [[require('config.nvim-tree')]],
+      "nvim-tree/nvim-web-devicons",
+      "nvim-tree/nvim-tree.lua",
+      config = function()
+        require("nvim-tree").setup {}
+      end,
     }
 
-    use { "ii14/emmylua-nvim", ft = "lua" }
+    use { "habamax/vim-rst" }
+
+    use { "stsewd/sphinx.nvim" }
+
+    use { "neoclide/coc.nvim", branch = "release" }
+
+    use { "junegunn/fzf" }
 
     use { "j-hui/fidget.nvim", after = "nvim-lspconfig", config = [[require('config.fidget-nvim')]] }
+
+    -- my Plugins
+    use { "ckipp01/stylua-nvim", run = "cargo install stylua" }
+
+    -- lua formator
+    use { "mhartington/formatter.nvim" }
+
+    -- cscope support
+    use { "dhananjaylatkar/cscope_maps.nvim" } -- cscope keymaps
+
+    -- load cscope maps
+    -- pass empty table to setup({}) for default options
+    require("cscope_maps").setup {
+      disable_maps = false, -- true disables my keymaps, only :Cscope will be loaded
+      cscope = {
+        db_file = "./cscope.out", -- location of cscope db file
+      },
+    }
   end,
   config = {
     max_jobs = 16,
@@ -397,3 +426,55 @@ api.nvim_create_autocmd({ "BufWritePost" }, {
     vim.notify("PackerCompile done!", vim.log.levels.INFO, { title = "Nvim-config" })
   end,
 })
+
+-- lua formatter setup
+-- Utilities for creating configurations
+local formatter_util = require("formatter.util")
+
+-- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
+require("formatter").setup {
+  -- Enable or disable logging
+  logging = true,
+  -- Set the log level
+  log_level = vim.log.levels.WARN,
+  -- All formatter configurations are opt-in
+  filetype = {
+    -- Formatter configurations for filetype "lua" go here
+    -- and will be executed in order
+    lua = {
+      -- "formatter.filetypes.lua" defines default configurations for the
+      -- "lua" filetype
+      require("formatter.filetypes.lua").stylua,
+
+      -- You can also define your own configuration
+      function()
+        -- Supports conditional formatting
+        if formatter_util.get_current_buffer_file_name() == "special.lua" then
+          return nil
+        end
+
+        -- Full specification of configurations is down below and in Vim help
+        -- files
+        return {
+          exe = "stylua",
+          args = {
+            "--search-parent-directories",
+            "--stdin-filepath",
+            formatter_util.escape_path(formatter_util.get_current_buffer_file_path()),
+            "--",
+            "-",
+          },
+          stdin = true,
+        }
+      end,
+    },
+
+    -- Use the special "*" filetype for defining formatter configurations on
+    -- any filetype
+    ["*"] = {
+      -- "formatter.filetypes.any" defines default configurations for any
+      -- filetype
+      require("formatter.filetypes.any").remove_trailing_whitespace,
+    },
+  },
+}

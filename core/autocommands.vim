@@ -121,3 +121,9 @@ augroup END
 
 " Load auto-command defined in Lua
 lua require("custom-autocmd")
+
+" Auto format lua file after saving.
+augroup FormatAutogroup
+  autocmd!
+  autocmd BufWritePost * FormatWrite
+augroup END
