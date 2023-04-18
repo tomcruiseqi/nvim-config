@@ -363,9 +363,6 @@ packer.startup {
     use {
       "nvim-tree/nvim-web-devicons",
       "nvim-tree/nvim-tree.lua",
-      config = function()
-        require("nvim-tree").setup {}
-      end,
     }
 
     use { "habamax/vim-rst" }
@@ -385,15 +382,12 @@ packer.startup {
     use { "mhartington/formatter.nvim" }
 
     -- cscope support
-    use { "dhananjaylatkar/cscope_maps.nvim" } -- cscope keymaps
-
-    -- load cscope maps
-    -- pass empty table to setup({}) for default options
-    require("cscope_maps").setup {
-      disable_maps = false, -- true disables my keymaps, only :Cscope will be loaded
-      cscope = {
-        db_file = "./cscope.out", -- location of cscope db file
-      },
+    use {
+      "dhananjaylatkar/cscope_maps.nvim",
+      after = "which-key.nvim",
+      config = function()
+        require("cscope_maps").setup {}
+      end,
     }
   end,
   config = {
@@ -476,5 +470,73 @@ require("formatter").setup {
       -- filetype
       require("formatter.filetypes.any").remove_trailing_whitespace,
     },
+  },
+}
+
+-- nvim-web-devicons-setup
+require("nvim-web-devicons").setup {
+  -- your personnal icons can go here (to override)
+  -- you can specify color or cterm_color instead of specifying both of them
+  -- DevIcon will be appended to `name`
+  override = {
+    zsh = {
+      icon = "",
+      color = "#428850",
+      cterm_color = "65",
+      name = "Zsh",
+    },
+  },
+  -- globally enable different highlight colors per icon (default to true)
+  -- if set to false all icons will have the default icon's color
+  color_icons = true,
+  -- globally enable default icons (default to false)
+  -- will get overriden by `get_icons` option
+  default = true,
+  -- globally enable "strict" selection of icons - icon will be looked up in
+  -- different tables, first by filename, and if not found by extension; this
+  -- prevents cases when file doesn't have any extension but still gets some icon
+  -- because its name happened to match some extension (default to false)
+  strict = true,
+  -- same as `override` but specifically for overrides by filename
+  -- takes effect when `strict` is true
+  override_by_filename = {
+    [".gitignore"] = {
+      icon = "",
+      color = "#f1502f",
+      name = "Gitignore",
+    },
+  },
+  -- same as `override` but specifically for overrides by extension
+  -- takes effect when `strict` is true
+  override_by_extension = {
+    ["log"] = {
+      icon = "",
+      color = "#81e043",
+      name = "Log",
+    },
+  },
+}
+
+-- nvim-tree setup
+-- examples for your init.lua
+
+-- disable netrw at the very start of your init.lua (strongly advised)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- set termguicolors to enable highlight groups
+vim.opt.termguicolors = true
+
+-- empty setup using defaults
+-- require("nvim-tree").setup()
+
+-- OR setup with some options
+require("nvim-tree").setup {
+  sort_by = "case_sensitive",
+  renderer = {
+    group_empty = true,
+  },
+  filters = {
+    dotfiles = true,
   },
 }
