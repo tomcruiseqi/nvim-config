@@ -389,6 +389,14 @@ packer.startup {
         require("cscope_maps").setup {}
       end,
     }
+
+    -- tmux and nvim copy and from plugin.
+    use {
+      "aserowy/tmux.nvim",
+      config = function()
+        return require("tmux").setup()
+      end,
+    }
   end,
   config = {
     max_jobs = 16,
