@@ -128,9 +128,11 @@ packer.startup({
 			})
 		end
 
+		-- dependencies for telescope.
+		use({ "sharkdp/fd" })
+		-- telescope.
 		use({
 			"nvim-telescope/telescope.nvim",
-			cmd = "Telescope",
 			requires = { { "nvim-lua/plenary.nvim" } },
 		})
 		-- search emoji and other symbols
@@ -309,13 +311,11 @@ packer.startup({
 		use({ "godlygeek/tabular", cmd = { "Tabularize" } })
 
 		-- Markdown previewing (only for Mac and Windows)
-		if vim.g.is_win or vim.g.is_mac then
-			use({
-				"iamcco/markdown-preview.nvim",
-				run = "cd app && npm install",
-				ft = { "markdown" },
-			})
-		end
+		use({
+			"iamcco/markdown-preview.nvim",
+			run = "cd app && npm install",
+			ft = { "markdown" },
+		})
 
 		use({
 			"folke/zen-mode.nvim",
@@ -323,9 +323,7 @@ packer.startup({
 			config = [[require('config.zen-mode')]],
 		})
 
-		if vim.g.is_mac then
-			use({ "rhysd/vim-grammarous", ft = { "markdown" } })
-		end
+		use({ "rhysd/vim-grammarous", ft = { "markdown" } })
 
 		use({ "chrisbra/unicode.vim", event = "VimEnter" })
 
@@ -349,7 +347,6 @@ packer.startup({
 		-- we only enable these plugins
 		-- for Linux and Mac
 		if utils.executable("tmux") then
-			-- .tmux.conf syntax highlighting and setting check
 			use({ "tmux-plugins/vim-tmux", ft = { "tmux" } })
 		end
 
@@ -436,14 +433,29 @@ packer.startup({
 			config = [[require('config.fidget-nvim')]],
 		})
 
-		-- my Plugins
-		use({ "ckipp01/stylua-nvim", run = "cargo install stylua" })
-
-		-- lua formator
-		use({ "mhartington/formatter.nvim" })
-
 		-- cscope support
-		use("dhananjaylatkar/cscope_maps.nvim") -- cscope keymaps
+		use({
+			"dhananjaylatkar/cscope_maps.nvim",
+			after = "which-key.nvim",
+			config = function()
+				-- dhananjaylatkar/cscope_maps.nvim configuration
+				require("cscope_maps").setup({
+					-- true disables my keymaps, only :Cscope will be loaded
+					disable_maps = false,
+					cscope = {
+						-- location of cscope db file
+						db_file = "./cscope.out",
+						-- true will show results in telescope picker
+						use_telescope = true,
+						-- cmd used for :Cscope build
+						db_build_cmd = {
+							exec = "cscope",
+							args = { "-bqkv" },
+						},
+					},
+				})
+			end,
+		})
 
 		-- tmux and nvim copy and from plugin.
 		use({
@@ -478,80 +490,6 @@ else
 		vim.notify(msg, vim.log.levels.ERROR, { title = "nvim-config" })
 	end
 end
-
--- Auto-generate packer_compiled.lua file
-api.nvim_create_autocmd({ "BufWritePost" }, {
-	pattern = "*/nvim/lua/plugins.lua",
-	group = api.nvim_create_augroup("packer_auto_compile", { clear = true }),
-	callback = function(ctx)
-		local cmd = "source " .. ctx.file
-		vim.cmd(cmd)
-		vim.cmd("PackerCompile")
-		vim.notify(
-			"PackerCompile done!",
-			vim.log.levels.INFO,
-			{ title = "Nvim-config" }
-		)
-	end,
-})
-
--- lua formatter setup
--- Utilities for creating configurations
-local formatter_util = require("formatter.util")
-
--- Provides the Format, FormatWrite, FormatLock, and FormatWriteLock commands
-require("formatter").setup({
-	-- Enable or disable logging
-	logging = true,
-	-- Set the log level
-	log_level = vim.log.levels.WARN,
-	-- All formatter configurations are opt-in
-	filetype = {
-		-- Formatter configurations for filetype "lua" go here
-		-- and will be executed in order
-		lua = {
-			-- "formatter.filetypes.lua" defines default configurations for the
-			-- "lua" filetype
-			require("formatter.filetypes.lua").stylua,
-
-			-- You can also define your own configuration
-			function()
-				-- Supports conditional formatting
-				if
-					formatter_util.get_current_buffer_file_name()
-					== "special.lua"
-				then
-					return nil
-				end
-
-				-- Full specification of configurations is down below and in Vim help
-				-- files
-				return {
-					exe = "stylua",
-					args = {
-						"--search-parent-directories",
-						"--config-path=/home/qizengtian/.stylua.toml",
-						"--stdin-filepath",
-						formatter_util.escape_path(
-							formatter_util.get_current_buffer_file_path()
-						),
-						"--",
-						"-",
-					},
-					stdin = true,
-				}
-			end,
-		},
-
-		-- Use the special "*" filetype for defining formatter configurations on
-		-- any filetype
-		["*"] = {
-			-- "formatter.filetypes.any" defines default configurations for any
-			-- filetype
-			require("formatter.filetypes.any").remove_trailing_whitespace,
-		},
-	},
-})
 
 -- nvim-web-devicons-setup
 require("nvim-web-devicons").setup({
@@ -597,20 +535,8 @@ require("nvim-web-devicons").setup({
 	},
 })
 
+------------------------------------------------------------------------------
 -- nvim-tree setup
--- examples for your init.lua
-
--- disable netrw at the very start of your init.lua (strongly advised)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
--- set termguicolors to enable highlight groups
-vim.opt.termguicolors = true
-
--- empty setup using defaults
--- require("nvim-tree").setup()
-
--- OR setup with some options
 require("nvim-tree").setup({
 	sort_by = "case_sensitive",
 	renderer = {
@@ -621,12 +547,11 @@ require("nvim-tree").setup({
 	},
 })
 
--- dhananjaylatkar/cscope_maps.nvim configuration
-require("cscope_maps").setup({})
+------------------------------------------------------------------------------
+-- telesceope setup.
+require("telescope").setup({})
 
--- vertial line setup.
-vim.opt.colorcolumn = "79"
-
+------------------------------------------------------------------------------
 -- nvim-treesitter setup
 require("nvim-treesitter.configs").setup({
 	-- A list of parser names, or "all" alled).
@@ -654,24 +579,31 @@ require("nvim-treesitter.configs").setup({
 	sync_install = false,
 
 	-- Automatically install missing parsers when entering buffer
-	-- Recommendation: set to false if you don't have `tree-sitter` CLI installed locally
+	-- Recommendation: set to false if you don't have
+  -- `tree-sitter` CLI installed locally
 	auto_install = true,
 
 	-- List of parsers to ignore installing (for "all")
 	ignore_install = { "javascript" },
 
-	---- If you need to change the installation directory of the parsers (see -> Advanced Setup)
-	-- parser_install_dir = "/some/path/to/store/parsers", -- Remember to run vim.opt.runtimepath:append("/some/path/to/store/parsers")!
+	-- If you need to change the installation directory 
+  -- of the parsers (see -> Advanced Setup)
+	-- parser_install_dir = "/some/path/to/store/parsers", 
+  -- Remember to run 
+  -- vim.opt.runtimepath:append("/some/path/to/store/parsers")!
 
 	highlight = {
 		enable = true,
 
-		-- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
-		-- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+		-- NOTE: these are the names of the parsers and not the filetype. 
+    -- (for example if you want to
+		-- disable highlighting for the `tex` filetype, you need to include
+    -- `latex` in this list as this is
 		-- the name of the parser)
 		-- list of language that will be disabled
 		disable = {},
-		-- Or use a function for more flexibility, e.g. to disable slow treesitter highlight for large files
+		-- Or use a function for more flexibility,
+    -- e.g. to disable slow treesitter highlight for large files
 		disable = function(lang, buf)
 			local max_filesize = 100 * 1024 -- 100 KB
 			local ok, stats =
@@ -681,10 +613,30 @@ require("nvim-treesitter.configs").setup({
 			end
 		end,
 
-		-- Setting this to true will run `:h syntax` and tree-sitter at the same time.
-		-- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
-		-- Using this option may slow down your editor, and you may see some duplicate highlights.
+		-- Setting this to true will run `:h syntax` 
+    -- and tree-sitter at the same time.
+		-- Set this to `true` if you depend on 'syntax'
+    -- being enabled (like for indentation).
+		-- Using this option may slow down your editor, 
+    -- and you may see some duplicate highlights.
 		-- Instead of true it can also be a list of languages
 		additional_vim_regex_highlighting = true,
 	},
 })
+
+
+------------------------------------------------------------------------------
+-------------------- plugin variable settings --------------------------------
+-- vertial line settings.
+vim.opt.colorcolumn = "79"
+
+-- plguin nvim-tree settings.
+-- disable netrw at the very start of your init.lua (strongly advised)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- set termguicolors to enable highlight groups
+vim.opt.termguicolors = true
+
+-- plugin targets settings.
+
