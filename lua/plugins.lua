@@ -433,30 +433,6 @@ packer.startup({
 			config = [[require('config.fidget-nvim')]],
 		})
 
-		-- cscope support
-		use({
-			"dhananjaylatkar/cscope_maps.nvim",
-			after = "which-key.nvim",
-			config = function()
-				-- dhananjaylatkar/cscope_maps.nvim configuration
-				require("cscope_maps").setup({
-					-- true disables my keymaps, only :Cscope will be loaded
-					disable_maps = false,
-					cscope = {
-						-- location of cscope db file
-						db_file = "./cscope.out",
-						-- true will show results in telescope picker
-						use_telescope = true,
-						-- cmd used for :Cscope build
-						db_build_cmd = {
-							exec = "cscope",
-							args = { "-bqkv" },
-						},
-					},
-				})
-			end,
-		})
-
 		-- tmux and nvim copy and from plugin.
 		use({
 			"aserowy/tmux.nvim",
