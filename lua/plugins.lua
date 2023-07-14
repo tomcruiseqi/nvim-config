@@ -709,14 +709,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
 					vim.lsp.buf.add_workspace_folder,
 					"Add lsp workspace.",
 				},
-			},
-			p = {
-				vim.diagnostic.goto_prev,
-				"Goto last position.",
-			},
-			n = {
-				vim.diagnostic.goto_next,
-				"Goto next position",
+				Z = {
+					vim.diagnostic.goto_prev,
+					"Goto last position.",
+				},
+				z = {
+					vim.diagnostic.goto_next,
+					"Goto next position",
+				},
 			},
 		}, {
 			prefix = "<Space>",
