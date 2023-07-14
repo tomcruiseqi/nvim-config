@@ -449,6 +449,9 @@ packer.startup({
 	},
 })
 
+--------------------------- Plugin configuration --------------------------
+---------------------------------------------------------------------------
+
 -- For fresh install, we need to install plugins.
 -- Otherwise, we just need to require `packer_compiled.lua`.
 if fresh_install then
@@ -513,6 +516,7 @@ require("nvim-web-devicons").setup({
 require("nvim-tree").setup({
 	sort_by = "case_sensitive",
 	renderer = {
+		highlight_opened_files = "all",
 		group_empty = true,
 	},
 	filters = {
@@ -643,11 +647,6 @@ lspconfig.ruby_ls.setup({})
 lspconfig.sqlls.setup({})
 
 -- Global mappings.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions
-vim.keymap.set("n", "<space>e", vim.diagnostic.open_float)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
-vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist)
 
 -- Use LspAttach autocommand to only map the following keys
 -- after the language server attaches to the current buffer
@@ -657,35 +656,72 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- Enable completion triggered by <c-x><c-o>
 		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 
-		-- Buffer local mappings.
-		-- See `:help vim.lsp.*` for documentation on any of the below functions
-		local opts = { buffer = ev.buf }
-		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
-		vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
-		vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-		vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-		vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, opts)
-		vim.keymap.set("n", "<space>wa", vim.lsp.buf.add_workspace_folder, opts)
-		vim.keymap.set(
-			"n",
-			"<space>wr",
-			vim.lsp.buf.remove_workspace_folder,
-			opts
-		)
-		vim.keymap.set("n", "<space>wl", function()
-			print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-		end, opts)
-		vim.keymap.set("n", "<space>D", vim.lsp.buf.type_definition, opts)
-		vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, opts)
-		vim.keymap.set({ "n", "v" }, "<space>ca", vim.lsp.buf.code_action, opts)
-		vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
-		vim.keymap.set("n", "<space>e", vim.diagnostic.open_float, opts)
-		vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-		vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-		vim.keymap.set("n", "<space>q", vim.diagnostic.setloclist, opts)
-		vim.keymap.set("n", "<space>f", function()
-			vim.lsp.buf.format({ async = true })
-		end, opts)
+		-- self-setup keybindings using which-key.
+		local wk = require("which-key")
+		wk.register({
+			c = {
+				name = "lspkeymap",
+				D = {
+					vim.lsp.buf.declaration,
+					"Go to declaratin",
+				},
+				d = {
+					vim.lsp.buf.definition,
+					"Go to definition",
+				},
+				h = {
+					vim.lsp.buf.document_highlight,
+					"Highlight on selection.",
+				},
+				s = {
+					vim.lsp.buf.document_symbol,
+					"List all symbols.",
+				},
+				f = {
+					vim.lsp.buf.format({ async = true }),
+					"Format.",
+				},
+				b = {
+					vim.lsp.buf.hover,
+					"Brief of selection.",
+				},
+				i = {
+					vim.lsp.buf.implementation,
+					"Get all implementations.",
+				},
+				c = {
+					vim.lsp.buf.incoming_calls,
+					"Find all symbol usages.",
+				},
+				C = {
+					vim.lsp.buf.outgoing_calls,
+					"Get all callees.",
+				},
+				r = {
+					vim.lsp.buf.references,
+					"Get all references.",
+				},
+				S = {
+					vim.lsp.buf.server_ready,
+					"Check server status.",
+				},
+				a = {
+					vim.lsp.buf.add_workspace_folder,
+					"Add lsp workspace.",
+				},
+			},
+			p = {
+				vim.diagnostic.goto_prev,
+				"Goto last position.",
+			},
+			n = {
+				vim.diagnostic.goto_next,
+				"Goto next position",
+			},
+		}, {
+			prefix = "<Space>",
+			buffer = ev.buf,
+		})
 	end,
 })
 
@@ -693,13 +729,3 @@ vim.api.nvim_create_autocmd("LspAttach", {
 -------------------- plugin variable settings --------------------------------
 -- vertial line settings.
 vim.opt.colorcolumn = "79"
-
--- plguin nvim-tree settings.
--- disable netrw at the very start of your init.lua (strongly advised)
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
--- set termguicolors to enable highlight groups
-vim.opt.termguicolors = true
-
--- plugin targets settings.
