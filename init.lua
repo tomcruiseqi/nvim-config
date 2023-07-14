@@ -10,6 +10,18 @@
 -- GitHub: https://github.com/jdhao
 -- StackOverflow: https://stackoverflow.com/users/6064933/jdhao
 
+-- plguin nvim-tree settings.
+-- disable netrw at the very start of your init.lua (strongly advised)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- set termguicolors to enable highlight groups
+vim.opt.termguicolors = true
+
+----------------------------------------------------------------------------
+--------------------- Now, begin the settings ------------------------------
+
+
 local api = vim.api
 local version = vim.version
 

@@ -677,7 +677,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 					vim.lsp.buf.document_symbol,
 					"List all symbols.",
 				},
-				f = {
+				F = {
 					vim.lsp.buf.format({ async = true }),
 					"Format.",
 				},
