@@ -93,15 +93,15 @@ packer.startup({
 		end
 
 		-- Super fast buffer jump
-		use({
-			"phaazon/hop.nvim",
-			event = "VimEnter",
-			config = function()
-				vim.defer_fn(function()
-					require("config.nvim_hop")
-				end, 2000)
-			end,
-		})
+		-- use({
+		-- 	"phaazon/hop.nvim",
+		--	event = "VimEnter",
+		-- 	config = function()
+		---		vim.defer_fn(function()
+		--			require("config.nvim_hop")
+		--		end, 2000)
+		--	end,
+		--})
 
 		-- Show match number and index for searching
 		use({
@@ -214,7 +214,7 @@ packer.startup({
 		use({ "Raimondi/delimitMate", event = "InsertEnter" })
 
 		-- Comment plugin
-		use({ "tpope/vim-commentary", event = "VimEnter" })
+    -- use({ "tpope/vim-commentary", event = "VimEnter" })
 
 		-- Multiple cursor plugin like Sublime Text?
 		-- use 'mg979/vim-visual-multi'
@@ -327,10 +327,10 @@ packer.startup({
 		-- Additional powerful text object for vim,
 		-- this plugin should be studied
 		-- carefully to use its full power
-		use({ "wellle/targets.vim", event = "VimEnter" })
+		--use({ "wellle/targets.vim", event = "VimEnter" })
 
 		-- Plugin to manipulate character pairs quickly
-		use({ "machakann/vim-sandwich", event = "VimEnter" })
+		-- use({ "machakann/vim-sandwich", event = "VimEnter" })
 
 		-- Add indent object for vim (useful for languages like Python)
 		use({ "michaeljsmith/vim-indent-object", event = "VimEnter" })
@@ -344,7 +344,7 @@ packer.startup({
 		-- we only enable these plugins
 		-- for Linux and Mac
 		if utils.executable("tmux") then
-			use({ "tmux-plugins/vim-tmux", ft = { "tmux" } })
+			use({ "tmux-plugins/vim-tmux", ft = { "vim-tmux" } })
 		end
 
 		-- Modern matchit implementation
@@ -373,14 +373,14 @@ packer.startup({
 		end
 
 		-- Debugger plugin
-		if vim.g.is_win or vim.g.is_linux then
-			use({
-				"sakhnik/nvim-gdb",
-				run = { "bash install.sh" },
-				opt = true,
-				setup = [[vim.cmd('packadd nvim-gdb')]],
-			})
-		end
+		-- if vim.g.is_win or vim.g.is_linux then
+		--	use({
+		---		"sakhnik/nvim-gdb",
+		--		run = { "bash install.sh" },
+		--		opt = true,
+		---		setup = [[vim.cmd('packadd nvim-gdb')]],
+		--	})
+		-- end
 
 		-- Session management plugin
 		use({ "tpope/vim-obsession", cmd = "Obsession" })
@@ -399,11 +399,16 @@ packer.startup({
 		-- showing keybindings
 		use({
 			"folke/which-key.nvim",
-			event = "VimEnter",
 			config = function()
-				vim.defer_fn(function()
-					require("config.which-key")
-				end, 2000)
+				vim.o.timeout = true
+				vim.o.timeoutlen = 300
+				require("which-key").setup({
+					plugins = {
+						presets = {
+							g = false,
+						},
+					},
+				})
 			end,
 		})
 
@@ -426,8 +431,9 @@ packer.startup({
 
 		use({
 			"j-hui/fidget.nvim",
-			after = "nvim-lspconfig",
-			config = [[require('config.fidget-nvim')]],
+			config = function()
+				require("fidget").setup({})
+			end,
 		})
 
 		-- tmux and nvim copy and from plugin.
@@ -678,7 +684,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 					"List all symbols.",
 				},
 				F = {
-					vim.lsp.buf.format({ async = true }),
+					vim.lsp.buf.format,
 					"Format.",
 				},
 				b = {
