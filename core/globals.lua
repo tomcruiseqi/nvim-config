@@ -73,3 +73,6 @@ vim.g.loaded_matchparen = 1
 
 -- Disable sql omni completion, it is broken.
 vim.g.loaded_sql_completion = 1
+
+-- Set colorcolumn to 79.
+api.nvim_set_option_value("colorcolumn", "79", {})
