@@ -75,6 +75,7 @@ packer.startup({
 
 		use({
 			"nvim-treesitter/nvim-treesitter",
+			run = ":TSUpdate",
 		})
 
 		-- Python indent (follows the PEP8 style)
@@ -86,10 +87,10 @@ packer.startup({
 		use({ "machakann/vim-swap", event = "VimEnter" })
 
 		-- IDE for Lisp
-		-- if utils.executable("sbcl") then
-		-- 	-- use 'kovisoft/slimv'
-		-- 	use({ "vlime/vlime", rtp = "vim/", ft = { "lisp" } })
-		-- end
+		if utils.executable("sbcl") then
+			use("kovisoft/slimv")
+			use({ "vlime/vlime", rtp = "vim/", ft = { "lisp" } })
+		end
 
 		-- Super fast buffer jump
 		use({
@@ -149,12 +150,13 @@ packer.startup({
 		use({ "tanvirtin/monokai.nvim", opt = true })
 		use({ "marko-cerovac/material.nvim", opt = true })
 
-		-- use({
-		-- 	"nvim-lualine/lualine.nvim",
-		-- 	event = "VimEnter",
-		-- 	cond = firenvim_not_active,
-		-- 	config = [[require('config.statusline')]],
-		-- })
+		-- Using Lua to configure the nvim status line.
+		use({
+			"nvim-lualine/lualine.nvim",
+			event = "VimEnter",
+			cond = firenvim_not_active,
+			config = [[require('config.statusline')]],
+		})
 
 		use({
 			"akinsho/bufferline.nvim",
@@ -163,19 +165,20 @@ packer.startup({
 			config = [[require('config.bufferline')]],
 		})
 
-		-- -- fancy start screen
-		-- use({
-		-- 	"glepnir/dashboard-nvim",
-		-- 	event = "VimEnter",
-		-- 	cond = firenvim_not_active,
-		-- 	config = [[require('config.dashboard-nvim')]],
-		-- })
+		-- fancy start screen
+		use({
+			"glepnir/dashboard-nvim",
+			event = "VimEnter",
+			cond = firenvim_not_active,
+			config = [[require('config.dashboard-nvim')]],
+		})
 
-		-- use({
-		-- 	"lukas-reineke/indent-blankline.nvim",
-		-- 	event = "VimEnter",
-		-- 	config = [[require('config.indent-blankline')]],
-		-- })
+		-- Adds indentation guides to all lines (including empty lines).
+		use({
+			"lukas-reineke/indent-blankline.nvim",
+			event = "VimEnter",
+			config = [[require('config.indent-blankline')]],
+		})
 
 		-- Highlight URLs inside vim
 		use({ "itchyny/vim-highlighturl", event = "VimEnter" })
@@ -191,19 +194,11 @@ packer.startup({
 			end,
 		})
 
-		-- -- For Windows and Mac, we can open an URL in the browser.
-		-- -- For Linux, it may not be possible since we maybe
-		-- -- in a server which disables GUI.
-		-- if vim.g.is_win or vim.g.is_mac then
-		-- 	-- open URL in browser
-		-- 	use({ "tyru/open-browser.vim", event = "VimEnter" })
-		-- end
-
-		-- -- Only install these plugins if ctags are installed on the system
-		-- if utils.executable("ctags") then
-		-- 	-- show file tags in vim window
-		-- 	use({ "liuchengxu/vista.vim", cmd = "Vista" })
-		-- end
+		-- Only install these plugins if ctags are installed on the system
+		if utils.executable("ctags") then
+			-- show file tags in vim window
+			use({ "liuchengxu/vista.vim", cmd = "Vista" })
+		end
 
 		-- -- Automatic insertion and deletion of a pair of characters
 		use({ "Raimondi/delimitMate", event = "InsertEnter" })
@@ -211,67 +206,58 @@ packer.startup({
 		-- Comment plugin
 		use({ "tpope/vim-commentary", event = "VimEnter" })
 
-		-- -- Multiple cursor plugin like Sublime Text?
-		-- -- use 'mg979/vim-visual-multi'
+		-- Multiple cursor plugin like Sublime Text?
+		use("mg979/vim-visual-multi")
 
-		-- -- Autosave files on certain events
-		-- use({ "907th/vim-auto-save", event = "InsertEnter" })
-
-		-- -- Show undo history visually
+		-- Show undo history visually
 		use({ "simnalamburt/vim-mundo", cmd = { "MundoToggle", "MundoShow" } })
 
-		-- -- better UI for some nvim actions
-		-- use({ "stevearc/dressing.nvim" })
+		-- better UI for some nvim actions
+		use({ "stevearc/dressing.nvim" })
 
-		-- -- Manage your yank history
-		-- use({
-		-- 	"gbprod/yanky.nvim",
-		-- 	config = [[require('config.yanky')]],
-		-- })
+		-- Manage your yank history
+		use({
+			"gbprod/yanky.nvim",
+			config = [[require('config.yanky')]],
+		})
 
-		-- -- Handy unix command inside Vim (Rename, Move etc.)
-		-- use({ "tpope/vim-eunuch", cmd = { "Rename", "Delete" } })
+		-- Handy unix command inside Vim (Rename, Move etc.)
+		use({ "tpope/vim-eunuch", cmd = { "Rename", "Delete" } })
 
-		-- -- Repeat vim motions
-		-- use({ "tpope/vim-repeat", event = "VimEnter" })
+		-- Repeat vim motions
+		use({ "tpope/vim-repeat", event = "VimEnter" })
 
-		-- use({ "nvim-zh/better-escape.vim", event = { "InsertEnter" } })
-
-		-- if vim.g.is_mac then
-		-- 	use({ "lyokha/vim-xkbswitch", event = { "InsertEnter" } })
-		-- elseif vim.g.is_win then
-		-- 	use({ "Neur1n/neuims", event = { "InsertEnter" } })
-		-- end
+		use({ "nvim-zh/better-escape.vim", event = { "InsertEnter" } })
 
 		-- Auto format tools
 		use({ "sbdchd/neoformat", cmd = { "Neoformat" } })
 
-		-- -- Git command inside vim
-		-- use({
-		-- 	"tpope/vim-fugitive",
-		-- 	event = "User InGitRepo",
-		-- 	config = [[require('config.fugitive')]],
-		-- })
+		-- Git command inside vim
+		use({
+			"tpope/vim-fugitive",
+			event = "User InGitRepo",
+			config = [[require('config.fugitive')]],
+		})
 
-		-- -- Better git log display
-		-- use({
-		-- 	"rbong/vim-flog",
-		-- 	requires = "tpope/vim-fugitive",
-		-- 	cmd = { "Flog" },
-		-- })
+		-- Better git log display
+		use({
+			"rbong/vim-flog",
+			requires = "tpope/vim-fugitive",
+			cmd = { "Flog" },
+		})
 
-		-- use({
-		-- 	"christoomey/vim-conflicted",
-		-- 	requires = "tpope/vim-fugitive",
-		-- 	cmd = { "Conflicted" },
-		-- })
+		use({
+			"christoomey/vim-conflicted",
+			requires = "tpope/vim-fugitive",
+			cmd = { "Conflicted" },
+		})
 
-		-- use({
-		-- 	"ruifm/gitlinker.nvim",
-		-- 	requires = "nvim-lua/plenary.nvim",
-		-- 	event = "User InGitRepo",
-		-- 	config = [[require('config.git-linker')]],
-		-- })
+		use({
+			"ruifm/gitlinker.nvim",
+			requires = "nvim-lua/plenary.nvim",
+			event = "User InGitRepo",
+			config = [[require('config.git-linker')]],
+		})
 
 		-- Show git change (change, delete, add) signs in vim sign column
 		use({
@@ -280,48 +266,43 @@ packer.startup({
 		})
 
 		-- Better git commit experience
-		-- use({
-		-- 	"rhysd/committia.vim",
-		-- 	opt = true,
-		-- 	setup = [[vim.cmd('packadd committia.vim')]],
-		-- })
+		use({
+			"rhysd/committia.vim",
+			opt = true,
+			setup = [[vim.cmd('packadd committia.vim')]],
+		})
 
-		-- use({
-		-- 	"kevinhwang91/nvim-bqf",
-		-- 	ft = "qf",
-		-- 	config = [[require('config.bqf')]],
-		-- })
-
-		-- Another markdown plugin
-		use({ "preservim/vim-markdown", ft = { "markdown" } })
-
-		-- Faster footnote generation
-		-- use({ "vim-pandoc/vim-markdownfootnotes", ft = { "markdown" } })
+		use({
+			"kevinhwang91/nvim-bqf",
+			ft = "qf",
+			config = [[require('config.bqf')]],
+		})
 
 		-- Vim tabular plugin for manipulate tabular,
 		-- required by markdown plugins
 		use({ "godlygeek/tabular", cmd = { "Tabularize" } })
 
-		-- use({
-		-- 	"folke/zen-mode.nvim",
-		-- 	cmd = "ZenMode",
-		-- 	config = [[require('config.zen-mode')]],
-		-- })
+		-- Distraction-free coding for Neovim >= 0.5.
+		use({
+			"folke/zen-mode.nvim",
+			cmd = "ZenMode",
+			config = [[require('config.zen-mode')]],
+		})
 
-		-- use({ "rhysd/vim-grammarous", ft = { "markdown" } })
+		use({ "rhysd/vim-grammarous", ft = { "markdown" } })
 
 		use({ "chrisbra/unicode.vim", event = "VimEnter" })
 
 		-- Additional powerful text object for vim,
 		-- this plugin should be studied
 		-- carefully to use its full power
-		--use({ "wellle/targets.vim", event = "VimEnter" })
+		use({ "wellle/targets.vim", event = "VimEnter" })
 
 		-- Plugin to manipulate character pairs quickly
 		use({ "machakann/vim-sandwich", event = "VimEnter" })
 
 		-- Add indent object for vim (useful for languages like Python)
-		-- use({ "michaeljsmith/vim-indent-object", event = "VimEnter" })
+		use({ "michaeljsmith/vim-indent-object", event = "VimEnter" })
 
 		-- Since tmux is only available on Linux and Mac,
 		-- we only enable these plugins
@@ -331,46 +312,13 @@ packer.startup({
 		end
 
 		-- Modern matchit implementation
-		-- use({ "andymass/vim-matchup", event = "VimEnter" })
-
-		-- use({
-		-- 	"tpope/vim-scriptease",
-		-- 	cmd = { "Scriptnames", "Message", "Verbose" },
-		-- })
-
-		-- Asynchronous command execution
-		-- use({ "skywind3000/asyncrun.vim", opt = true, cmd = { "AsyncRun" } })
-
-		-- use({ "cespare/vim-toml", ft = { "toml" }, branch = "main" })
-
-		-- Edit text area in browser using nvim
-		-- if vim.g.is_win or vim.g.is_mac then
-		-- 	use({
-		-- 		"glacambre/firenvim",
-		-- 		run = function()
-		-- 			fn["firenvim#install"](0)
-		-- 		end,
-		-- 		opt = true,
-		-- 		setup = [[vim.cmd('packadd firenvim')]],
-		-- 	})
-		-- end
-
-		-- Debugger plugin
-		-- if vim.g.is_win or vim.g.is_linux then
-		--	use({
-		---		"sakhnik/nvim-gdb",
-		--		run = { "bash install.sh" },
-		--		opt = true,
-		---		setup = [[vim.cmd('packadd nvim-gdb')]],
-		--	})
-		-- end
-
-		-- Session management plugin
-		-- use({ "tpope/vim-obsession", cmd = "Obsession" })
-
-		-- if vim.g.is_linux then
-		-- 	use({ "ojroques/vim-oscyank", cmd = { "OSCYank", "OSCYankReg" } })
-		-- end
+		use({
+			"andymass/vim-matchup",
+			setup = function()
+				-- may set any options here
+				vim.g.matchup_matchparen_offscreen = { method = "popup" }
+			end,
+		})
 
 		-- The missing auto-completion for cmdline!
 		use({
@@ -426,6 +374,36 @@ packer.startup({
 				return require("tmux").setup()
 			end,
 		})
+
+		-- Debugger plugin
+		if vim.g.is_win or vim.g.is_linux then
+			use({
+				"sakhnik/nvim-gdb",
+				run = { "bash install.sh" },
+				opt = true,
+				setup = [[vim.cmd('packadd nvim-gdb')]],
+			})
+		end
+
+		------------------------ Find out what causes the text insert of first line.
+		-- Asynchronous command execution
+		use({ "skywind3000/asyncrun.vim", opt = true, cmd = { "AsyncRun" } })
+		use({ "cespare/vim-toml", ft = { "toml" }, branch = "main" })
+
+		-- Session management plugin
+		use({ "tpope/vim-obsession", cmd = "Obsession" })
+
+		-- Plugin to make vim plugins.
+		use({
+			"tpope/vim-scriptease",
+			cmd = { "Scriptnames", "Message", "Verbose" },
+		})
+
+		-- Another markdown plugin
+		use({ "preservim/vim-markdown", ft = { "markdown" } })
+
+		-- Faster footnote generation
+		use({ "vim-pandoc/vim-markdownfootnotes", ft = { "markdown" } })
 	end,
 	config = {
 		max_jobs = 16,
@@ -456,6 +434,19 @@ else
 	end
 end
 
+-- Auto format the file after save the file.
+api.nvim_create_autocmd({ "BufWritePost" }, {
+	group = api.nvim_create_augroup("file_auto_format", { clear = true }),
+	callback = function(ctx)
+		vim.cmd("Neoformat")
+		vim.notify(
+			"Auto format done!",
+			vim.log.levels.INFO,
+			{ title = "Neoformat" }
+		)
+	end,
+})
+
 -- Auto-generate packer_compiled.lua file
 api.nvim_create_autocmd({ "BufWritePost" }, {
 	pattern = "*/nvim/lua/plugins.lua",
@@ -470,15 +461,6 @@ api.nvim_create_autocmd({ "BufWritePost" }, {
 			{ title = "Nvim-config" }
 		)
 	end,
-})
-
--- Auto format the file after save the file.
-api.nvim_create_autocmd({ "BufWritePost" }, {
-  group = api.nvim_create_augroup("file_auto_format", {clear = true}),
-  callback = function(ctx)
-    vim.cmd("Neoformat")
-    vim.notify("Auto format done!", vim.log.levels.INFO, {title = "Neoformat"})
-  end,
 })
 
 -- nvim-web-devicons-setup
@@ -567,7 +549,7 @@ require("nvim-treesitter.configs").setup({
 	},
 
 	-- Install parsers synchronously (only applied to `ensure_installed`)
-	sync_install = false,
+	sync_install = true,
 
 	-- Automatically install missing parsers when entering buffer
 	-- Recommendation: set to false if you don't have
@@ -575,7 +557,7 @@ require("nvim-treesitter.configs").setup({
 	auto_install = true,
 
 	-- List of parsers to ignore installing (for "all")
-	ignore_install = { "javascript" },
+	ignore_install = { "" },
 
 	-- If you need to change the installation directory
 	-- of the parsers (see -> Advanced Setup)
@@ -612,6 +594,9 @@ require("nvim-treesitter.configs").setup({
 		-- and you may see some duplicate highlights.
 		-- Instead of true it can also be a list of languages
 		additional_vim_regex_highlighting = true,
+	},
+	matchup = {
+		enable = true,
 	},
 })
 
