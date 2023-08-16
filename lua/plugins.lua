@@ -387,23 +387,23 @@ packer.startup({
 
 		------------------------ Find out what causes the text insert of first line.
 		-- Asynchronous command execution
-		use({ "skywind3000/asyncrun.vim", opt = true, cmd = { "AsyncRun" } })
-		use({ "cespare/vim-toml", ft = { "toml" }, branch = "main" })
+		-- use({ "skywind3000/asyncrun.vim", opt = true, cmd = { "AsyncRun" } })
+		-- use({ "cespare/vim-toml", ft = { "toml" }, branch = "main" })
 
-		-- Session management plugin
-		use({ "tpope/vim-obsession", cmd = "Obsession" })
+		-- -- Session management plugin
+		-- use({ "tpope/vim-obsession", cmd = "Obsession" })
 
-		-- Plugin to make vim plugins.
-		use({
-			"tpope/vim-scriptease",
-			cmd = { "Scriptnames", "Message", "Verbose" },
-		})
+		-- -- Plugin to make vim plugins.
+		-- use({
+		-- 	"tpope/vim-scriptease",
+		-- 	cmd = { "Scriptnames", "Message", "Verbose" },
+		-- })
 
-		-- Another markdown plugin
-		use({ "preservim/vim-markdown", ft = { "markdown" } })
+		-- -- Another markdown plugin
+		-- use({ "preservim/vim-markdown", ft = { "markdown" } })
 
-		-- Faster footnote generation
-		use({ "vim-pandoc/vim-markdownfootnotes", ft = { "markdown" } })
+		-- -- Faster footnote generation
+		-- use({ "vim-pandoc/vim-markdownfootnotes", ft = { "markdown" } })
 	end,
 	config = {
 		max_jobs = 16,
