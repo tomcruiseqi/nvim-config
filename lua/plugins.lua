@@ -46,16 +46,46 @@ end
 packer.startup({
 	function(use)
 		-- it is recommended to put impatient.nvim before any other plugins
-		use({ "lewis6991/impatient.nvim", config = [[require('impatient')]] })
+		use({
+			"lewis6991/impatient.nvim",
+			config = [[require("impatient")]],
+		})
 
 		use({ "wbthomason/packer.nvim", opt = true })
 
+		-- showing keybindings
+		use({
+			"folke/which-key.nvim",
+			config = function()
+				vim.o.timeout = true
+				vim.o.timeoutlen = 300
+				require("which-key").setup({
+					plugins = {
+						presets = {
+							g = false,
+						},
+					},
+				})
+			end,
+		})
+
 		use({ "onsails/lspkind-nvim", event = "VimEnter" })
+
+		use({
+			"nvim-tree/nvim-tree.lua",
+		})
+
+		-- file explorer
+		use({
+			"nvim-tree/nvim-web-devicons",
+			config = [[require("config.web-devicons")]],
+		})
+
 		-- auto-completion engine
 		use({
 			"hrsh7th/nvim-cmp",
 			after = "lspkind-nvim",
-			config = [[require('config.nvim-cmp')]],
+			config = [[require("config.nvim-cmp")]],
 		})
 
 		-- nvim-cmp completion sources
@@ -63,6 +93,7 @@ packer.startup({
 		use({ "hrsh7th/cmp-path", after = "nvim-cmp" })
 		use({ "hrsh7th/cmp-buffer", after = "nvim-cmp" })
 		use({ "hrsh7th/cmp-omni", after = "nvim-cmp" })
+
 		-- Snippet engine and snippet template
 		use({ "SirVer/ultisnips", event = "InsertEnter" })
 		use({ "honza/vim-snippets", after = "ultisnips" })
@@ -71,8 +102,19 @@ packer.startup({
 			after = { "nvim-cmp", "ultisnips" },
 		})
 
-		use({ "neovim/nvim-lspconfig" })
+		-- Language server protocol support.
+		use({
+			"neovim/nvim-lspconfig",
+			requires = "which-key.nvim",
+			after = { "cmp-nvim-lsp" },
+			config = [[require("config.lsp")]],
+			event = "VimEnter",
+		})
 
+		-- Tree-sitter is a parser generator tool and an incremental
+		-- parsing library. It can build a concrete syntax tree for
+		-- a source file and efficiently update the syntax tree as
+		-- the source file is edited.
 		use({
 			"nvim-treesitter/nvim-treesitter",
 			run = ":TSUpdate",
@@ -84,13 +126,8 @@ packer.startup({
 		-- Python-related text object
 		use({ "jeetsukumaran/vim-pythonsense", ft = { "python" } })
 
+		-- A Vim text editor plugin to swap delimited items.
 		use({ "machakann/vim-swap", event = "VimEnter" })
-
-		-- IDE for Lisp
-		if utils.executable("sbcl") then
-			use("kovisoft/slimv")
-			use({ "vlime/vlime", rtp = "vim/", ft = { "lisp" } })
-		end
 
 		-- Super fast buffer jump
 		use({
@@ -108,7 +145,7 @@ packer.startup({
 			"kevinhwang91/nvim-hlslens",
 			branch = "main",
 			keys = { { "n", "*" }, { "n", "#" }, { "n", "n" }, { "n", "N" } },
-			config = [[require('config.hlslens')]],
+			config = [[require("config.hlslens")]],
 		})
 
 		-- File search, tag search and more
@@ -122,12 +159,12 @@ packer.startup({
 			})
 		end
 
-		-- dependencies for telescope.
+		-- Dependencies for telescope.
 		use({ "sharkdp/fd" })
-		-- telescope.
 		use({
 			"nvim-telescope/telescope.nvim",
 			requires = { { "nvim-lua/plenary.nvim" } },
+			config = [[require("config.telescope")]],
 		})
 		-- search emoji and other symbols
 		use({
@@ -137,11 +174,11 @@ packer.startup({
 
 		-- A list of colorscheme plugin you may want to try. Find what suits you.
 		use({ "navarasu/onedark.nvim", opt = true })
-		use({ "sainnhe/edge" })
+		use({ "sainnhe/edge", opt = true })
 		use({ "sainnhe/sonokai", opt = true })
 		use({ "sainnhe/gruvbox-material", opt = true })
 		use({ "shaunsingh/nord.nvim", opt = true })
-		use({ "sainnhe/everforest", opt = true })
+		use({ "sainnhe/everforest" })
 		use({ "EdenEast/nightfox.nvim", opt = true })
 		use({ "rebelot/kanagawa.nvim", opt = true })
 		use({ "catppuccin/nvim", as = "catppuccin", opt = true })
@@ -155,14 +192,18 @@ packer.startup({
 			"nvim-lualine/lualine.nvim",
 			event = "VimEnter",
 			cond = firenvim_not_active,
-			config = [[require('config.statusline')]],
+			config = [[require("config.statusline")]],
+			requires = "nvim-tree/nvim-web-devicons",
 		})
 
+		-- Make the buffer tabs more beautiful.
 		use({
 			"akinsho/bufferline.nvim",
 			event = "VimEnter",
 			cond = firenvim_not_active,
-			config = [[require('config.bufferline')]],
+			config = [[require("config.bufferline")]],
+			tag = "*",
+			requires = "nvim-tree/nvim-web-devicons",
 		})
 
 		-- fancy start screen
@@ -170,14 +211,13 @@ packer.startup({
 			"glepnir/dashboard-nvim",
 			event = "VimEnter",
 			cond = firenvim_not_active,
-			config = [[require('config.dashboard-nvim')]],
+			config = [[require("config.dashboard-nvim")]],
 		})
 
 		-- Adds indentation guides to all lines (including empty lines).
 		use({
 			"lukas-reineke/indent-blankline.nvim",
-			event = "VimEnter",
-			config = [[require('config.indent-blankline')]],
+			config = [[require("config.indent-blankline")]],
 		})
 
 		-- Highlight URLs inside vim
@@ -212,97 +252,21 @@ packer.startup({
 		-- Show undo history visually
 		use({ "simnalamburt/vim-mundo", cmd = { "MundoToggle", "MundoShow" } })
 
-		-- better UI for some nvim actions
-		use({ "stevearc/dressing.nvim" })
-
-		-- Manage your yank history
-		use({
-			"gbprod/yanky.nvim",
-			config = [[require('config.yanky')]],
-		})
-
 		-- Handy unix command inside Vim (Rename, Move etc.)
 		use({ "tpope/vim-eunuch", cmd = { "Rename", "Delete" } })
-
-		-- Repeat vim motions
-		use({ "tpope/vim-repeat", event = "VimEnter" })
-
-		use({ "nvim-zh/better-escape.vim", event = { "InsertEnter" } })
 
 		-- Auto format tools
 		use({ "sbdchd/neoformat", cmd = { "Neoformat" } })
 
-		-- Git command inside vim
-		use({
-			"tpope/vim-fugitive",
-			event = "User InGitRepo",
-			config = [[require('config.fugitive')]],
-		})
-
-		-- Better git log display
-		use({
-			"rbong/vim-flog",
-			requires = "tpope/vim-fugitive",
-			cmd = { "Flog" },
-		})
-
-		use({
-			"christoomey/vim-conflicted",
-			requires = "tpope/vim-fugitive",
-			cmd = { "Conflicted" },
-		})
-
-		use({
-			"ruifm/gitlinker.nvim",
-			requires = "nvim-lua/plenary.nvim",
-			event = "User InGitRepo",
-			config = [[require('config.git-linker')]],
-		})
-
 		-- Show git change (change, delete, add) signs in vim sign column
 		use({
 			"lewis6991/gitsigns.nvim",
-			config = [[require('config.gitsigns')]],
-		})
-
-		-- Better git commit experience
-		use({
-			"rhysd/committia.vim",
-			opt = true,
-			setup = [[vim.cmd('packadd committia.vim')]],
-		})
-
-		use({
-			"kevinhwang91/nvim-bqf",
-			ft = "qf",
-			config = [[require('config.bqf')]],
+			config = [[require("config.gitsigns")]],
 		})
 
 		-- Vim tabular plugin for manipulate tabular,
 		-- required by markdown plugins
 		use({ "godlygeek/tabular", cmd = { "Tabularize" } })
-
-		-- Distraction-free coding for Neovim >= 0.5.
-		use({
-			"folke/zen-mode.nvim",
-			cmd = "ZenMode",
-			config = [[require('config.zen-mode')]],
-		})
-
-		use({ "rhysd/vim-grammarous", ft = { "markdown" } })
-
-		use({ "chrisbra/unicode.vim", event = "VimEnter" })
-
-		-- Additional powerful text object for vim,
-		-- this plugin should be studied
-		-- carefully to use its full power
-		use({ "wellle/targets.vim", event = "VimEnter" })
-
-		-- Plugin to manipulate character pairs quickly
-		use({ "machakann/vim-sandwich", event = "VimEnter" })
-
-		-- Add indent object for vim (useful for languages like Python)
-		use({ "michaeljsmith/vim-indent-object", event = "VimEnter" })
 
 		-- Since tmux is only available on Linux and Mac,
 		-- we only enable these plugins
@@ -324,33 +288,13 @@ packer.startup({
 		use({
 			"gelguy/wilder.nvim",
 			opt = true,
-			setup = [[vim.cmd('packadd wilder.nvim')]],
-		})
-
-		-- showing keybindings
-		use({
-			"folke/which-key.nvim",
-			config = function()
-				vim.o.timeout = true
-				vim.o.timeoutlen = 300
-				require("which-key").setup({
-					plugins = {
-						presets = {
-							g = false,
-						},
-					},
-				})
+			setup = function()
+				vim.cmd("packadd wilder.nvim")
 			end,
 		})
 
 		-- show and trim trailing whitespaces
 		use({ "jdhao/whitespace.nvim", event = "VimEnter" })
-
-		-- file explorer
-		use({
-			"nvim-tree/nvim-web-devicons",
-			"nvim-tree/nvim-tree.lua",
-		})
 
 		use({ "habamax/vim-rst" })
 
@@ -362,30 +306,22 @@ packer.startup({
 
 		use({
 			"j-hui/fidget.nvim",
-			config = function()
-				require("fidget").setup({})
-			end,
+			after = "nvim-lspconfig",
+			tag = "legacy",
+			config = [[require("config.fidget-nvim")]],
 		})
 
 		-- tmux and nvim copy and from plugin.
 		use({
 			"aserowy/tmux.nvim",
-			config = function()
-				return require("tmux").setup()
-			end,
+			config = [[require("tmux").setup()]],
 		})
 
-		-- Debugger plugin
-		if vim.g.is_win or vim.g.is_linux then
-			use({
-				"sakhnik/nvim-gdb",
-				run = { "bash install.sh" },
-				opt = true,
-				setup = [[vim.cmd('packadd nvim-gdb')]],
-			})
-		end
+		-- Iron allows you to quickly interact with the repl without having to leave your work bufferline.
+		use({ "Vigemus/iron.nvim", config = [[require('config.iron')]] })
 
-		------------------------ Find out what causes the text insert of first line.
+		---------------------------------------------------------------------------
+		--------------------- Find out what causes the text insert of first line.
 		-- Asynchronous command execution
 		-- use({ "skywind3000/asyncrun.vim", opt = true, cmd = { "AsyncRun" } })
 		-- use({ "cespare/vim-toml", ft = { "toml" }, branch = "main" })
@@ -404,6 +340,103 @@ packer.startup({
 
 		-- -- Faster footnote generation
 		-- use({ "vim-pandoc/vim-markdownfootnotes", ft = { "markdown" } })
+
+		--------------------- Above has been confirmed: Not related.
+
+		-- Debugger plugin
+		-- if vim.g.is_win or vim.g.is_linux then
+		-- 	use({
+		-- 		"sakhnik/nvim-gdb",
+		-- 		run = { "bash install.sh" },
+		-- 		opt = true,
+		-- 		setup = [[vim.cmd('packadd nvim-gdb')]],
+		-- 	})
+		-- end
+
+		-- Additional powerful text object for vim,
+		-- this plugin should be studied
+		-- carefully to use its full power
+		-- use({ "wellle/targets.vim", event = "VimEnter" })
+
+		-- -- Plugin to manipulate character pairs quickly
+		-- use({ "machakann/vim-sandwich", event = "VimEnter" })
+
+		-- -- Add indent object for vim (useful for languages like Python)
+		-- use({ "michaeljsmith/vim-indent-object", event = "VimEnter" })
+
+		-- use({
+		-- 	"folke/zen-mode.nvim",
+		-- 	cmd = "ZenMode",
+		-- 	config = [[require('config.zen-mode')]],
+		-- })
+
+		-- Better git log display
+		-- use({
+		-- 	"rbong/vim-flog",
+		-- 	requires = "tpope/vim-fugitive",
+		-- 	cmd = { "Flog" },
+		-- })
+
+		-- use({
+		-- 	"christoomey/vim-conflicted",
+		-- 	requires = "tpope/vim-fugitive",
+		-- 	cmd = { "Conflicted" },
+		-- })
+
+		-- use({
+		-- 	"ruifm/gitlinker.nvim",
+		-- 	requires = "nvim-lua/plenary.nvim",
+		-- 	event = "User InGitRepo",
+		-- 	config = [[require('config.git-linker')]],
+		-- })
+
+		-- Distraction-free coding for Neovim >= 0.5.
+		-- use({ "rhysd/vim-grammarous", ft = { "markdown" } })
+
+		-- use({ "chrisbra/unicode.vim", event = "VimEnter" })
+
+		-- Better git commit experience
+		-- use({
+		-- 	"rhysd/committia.vim",
+		-- 	opt = true,
+		-- 	setup = [[vim.cmd('packadd committia.vim')]],
+		-- })
+
+		-- use({
+		-- 	"kevinhwang91/nvim-bqf",
+		-- 	ft = "qf",
+		-- 	config = [[require('config.bqf')]],
+		-- })
+
+		-- Repeat vim motions
+		-- use({ "tpope/vim-repeat", event = "VimEnter" })
+
+		-- use({ "nvim-zh/better-escape.vim", event = { "InsertEnter" } })
+
+		-- Manage your yank history
+		-- use({
+		-- 	"gbprod/yanky.nvim",
+		-- 	config = [[require('config.yanky')]],
+		-- })
+
+		-- better UI for some nvim actions
+		-- use({ "stevearc/dressing.nvim" })
+
+		-- Git command inside vim
+		-- use({
+		-- 	"tpope/vim-fugitive",
+		-- 	event = "User InGitRepo",
+		-- 	config = [[require('config.fugitive')]],
+		-- })
+
+		-- IDE for Lisp
+		-- if utils.executable("sbcl") then
+		-- 	use("kovisoft/slimv")
+		-- 	use({ "vlime/vlime", rtp = "vim/", ft = { "lisp" } })
+
+		if packer_bootstrap then
+			require("packer").sync()
+		end
 	end,
 	config = {
 		max_jobs = 16,
@@ -415,9 +448,6 @@ packer.startup({
 		),
 	},
 })
-
---------------------------- Plugin configuration --------------------------
----------------------------------------------------------------------------
 
 -- For fresh install, we need to install plugins.
 -- Otherwise, we just need to require `packer_compiled.lua`.
@@ -463,255 +493,9 @@ api.nvim_create_autocmd({ "BufWritePost" }, {
 	end,
 })
 
--- nvim-web-devicons-setup
-require("nvim-web-devicons").setup({
-	-- your personnal icons can go here (to override)
-	-- you can specify color or cterm_color instead of specifying both of them
-	-- DevIcon will be appended to `name`
-	override = {
-		zsh = {
-			icon = "",
-			color = "#428850",
-			cterm_color = "65",
-			name = "Zsh",
-		},
-	},
-	-- globally enable different highlight colors per icon (default to true)
-	-- if set to false all icons will have the default icon's color
-	color_icons = true,
-	-- globally enable default icons (default to false)
-	-- will get overriden by `get_icons` option
-	default = true,
-	-- globally enable "strict" selection of icons - icon will be looked up in
-	-- different tables, first by filename, and if not found by extension; this
-	-- prevents cases when file doesn't have any extension but still gets some
-	-- icon because its name happened to match some extension (default to false)
-	strict = true,
-	-- same as `override` but specifically for overrides by filename
-	-- takes effect when `strict` is true
-	override_by_filename = {
-		[".gitignore"] = {
-			icon = "",
-			color = "#f1502f",
-			name = "Gitignore",
-		},
-	},
-	-- same as `override` but specifically for overrides by extension
-	-- takes effect when `strict` is true
-	override_by_extension = {
-		["log"] = {
-			icon = "",
-			color = "#81e043",
-			name = "Log",
-		},
-	},
-})
-
 ------------------------------------------------------------------------------
--- nvim-tree setup
-require("nvim-tree").setup({
-	sort_by = "case_sensitive",
-	renderer = {
-		highlight_opened_files = "all",
-		group_empty = true,
-	},
-	filters = {
-		dotfiles = true,
-	},
-})
-
-------------------------------------------------------------------------------
--- telesceope setup.
-require("telescope").setup({})
-
-------------------------------------------------------------------------------
--- nvim-treesitter setup
-require("nvim-treesitter.configs").setup({
-	-- A list of parser names, or "all" alled).
-	ensure_installed = {
-		"c",
-		"go",
-		"cpp",
-		"python",
-		"java",
-		"json",
-		"lua",
-		"vim",
-		"vimdoc",
-		"query",
-		"html",
-		"php",
-		"markdown_inline",
-		"ruby",
-		"rust",
-		"perl",
-		"sql",
-	},
-
-	-- Install parsers synchronously (only applied to `ensure_installed`)
-	sync_install = true,
-
-	-- Automatically install missing parsers when entering buffer
-	-- Recommendation: set to false if you don't have
-	-- `tree-sitter` CLI installed locally
-	auto_install = true,
-
-	-- List of parsers to ignore installing (for "all")
-	ignore_install = { "" },
-
-	-- If you need to change the installation directory
-	-- of the parsers (see -> Advanced Setup)
-	-- parser_install_dir = "/some/path/to/store/parsers",
-	-- Remember to run
-	-- vim.opt.runtimepath:append("/some/path/to/store/parsers")!
-
-	highlight = {
-		enable = true,
-
-		-- NOTE: these are the names of the parsers and not the filetype.
-		-- (for example if you want to
-		-- disable highlighting for the `tex` filetype, you need to include
-		-- `latex` in this list as this is
-		-- the name of the parser)
-		-- list of language that will be disabled
-		disable = {},
-		-- Or use a function for more flexibility,
-		-- e.g. to disable slow treesitter highlight for large files
-		disable = function(lang, buf)
-			local max_filesize = 100 * 1024 -- 100 KB
-			local ok, stats =
-				pcall(vim.loop.fs_stat, vim.api.nvim_buf_get_name(buf))
-			if ok and stats and stats.size > max_filesize then
-				return true
-			end
-		end,
-
-		-- Setting this to true will run `:h syntax`
-		-- and tree-sitter at the same time.
-		-- Set this to `true` if you depend on 'syntax'
-		-- being enabled (like for indentation).
-		-- Using this option may slow down your editor,
-		-- and you may see some duplicate highlights.
-		-- Instead of true it can also be a list of languages
-		additional_vim_regex_highlighting = true,
-	},
-	matchup = {
-		enable = true,
-	},
-})
-
-------------------------------------------------------------------------------
--- neovim-lspconfig settings.
--- Setup language servers.
-local lspconfig = require("lspconfig")
--- for c,cpp,obj-c,proto.
-lspconfig.clangd.setup({})
--- for python.
-lspconfig.pylsp.setup({})
-lspconfig.tsserver.setup({})
--- for rust.
-lspconfig.rust_analyzer.setup({
-	-- Server-specific settings. See `:help lspconfig-setup`
-	settings = {
-		["rust-analyzer"] = {},
-	},
-})
--- for html
---Enable (broadcasting) snippet capability for completion
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-lspconfig.html.setup({ capabilities = capabilities })
-lspconfig.jsonls.setup({ capabilities = capabilities })
-lspconfig.cssls.setup({ capabilities = capabilities })
-lspconfig.eslint.setup({
-	on_attach = function(client, bufnr)
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			buffer = bufnr,
-			command = "EslintFixAll",
-		})
-	end,
-})
-
--- for java.
-lspconfig.java_language_server.setup({
-	cmd = {
-		"/home/qizengtian/Documents/02-source/40-java-language-server/dist/lang_server_linux.sh",
-	},
-})
-
--- for ruby.
-lspconfig.ruby_ls.setup({})
-
--- for sql.
-lspconfig.sqlls.setup({})
-
--- Global mappings.
-
--- Use LspAttach autocommand to only map the following keys
--- after the language server attaches to the current buffer
-vim.api.nvim_create_autocmd("LspAttach", {
-	group = vim.api.nvim_create_augroup("UserLspConfig", {}),
-	callback = function(ev)
-		-- Enable completion triggered by <c-x><c-o>
-		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
-
-		-- self-setup keybindings using which-key.
-		local wk = require("which-key")
-		wk.register({
-			c = {
-				name = "lspkeymap",
-				D = {
-					vim.lsp.buf.declaration,
-					"Go to declaratin",
-				},
-				d = {
-					vim.lsp.buf.definition,
-					"Go to definition",
-				},
-				h = {
-					vim.lsp.buf.document_highlight,
-					"Highlight on selection.",
-				},
-				s = {
-					vim.lsp.buf.document_symbol,
-					"List all symbols.",
-				},
-				F = {
-					vim.lsp.buf.format,
-					"Format.",
-				},
-				b = {
-					vim.lsp.buf.hover,
-					"Brief of selection.",
-				},
-				i = {
-					vim.lsp.buf.implementation,
-					"Get all implementations.",
-				},
-				c = {
-					vim.lsp.buf.incoming_calls,
-					"Find all symbol usages.",
-				},
-				C = {
-					vim.lsp.buf.outgoing_calls,
-					"Get all callees.",
-				},
-				r = {
-					vim.lsp.buf.references,
-					"Get all references.",
-				},
-				S = {
-					vim.lsp.buf.server_ready,
-					"Check server status.",
-				},
-				a = {
-					vim.lsp.buf.add_workspace_folder,
-					"Add lsp workspace.",
-				},
-			},
-		}, {
-			prefix = "<Space>",
-			buffer = ev.buf,
-		})
-	end,
-})
+-- I don't know why the config not working, but the following code works.
+local path =
+	string.format("%s/lua/config/%s", vim.fn.stdpath("config"), "lsp.lua")
+local source_cmd = "source " .. path
+vim.cmd(source_cmd)
