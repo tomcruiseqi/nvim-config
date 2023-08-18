@@ -58,21 +58,14 @@ packer.startup({
 			"folke/which-key.nvim",
 			config = function()
 				vim.o.timeout = true
-				vim.o.timeoutlen = 300
-				require("which-key").setup({
-					plugins = {
-						presets = {
-							g = false,
-						},
-					},
-				})
+				vim.o.timeoutlen = 500
+				require("which-key").setup()
 			end,
 		})
 
-		use({ "onsails/lspkind-nvim", event = "VimEnter" })
-
 		use({
 			"nvim-tree/nvim-tree.lua",
+			config = [[require('config.nvim-tree')]],
 		})
 
 		-- file explorer
@@ -82,10 +75,12 @@ packer.startup({
 		})
 
 		-- auto-completion engine
+		use({ "onsails/lspkind-nvim", event = "VimEnter" })
 		use({
 			"hrsh7th/nvim-cmp",
 			after = "lspkind-nvim",
 			config = [[require("config.nvim-cmp")]],
+			event = "VimEnter",
 		})
 
 		-- nvim-cmp completion sources
@@ -101,14 +96,16 @@ packer.startup({
 			"quangnguyen30192/cmp-nvim-ultisnips",
 			after = { "nvim-cmp", "ultisnips" },
 		})
+		use("L3MON4D3/LuaSnip") -- Snippets plugin
 
 		-- Language server protocol support.
+		use({ "ms-jpq/coq_nvim", run = "python3 -m coq deps" })
+		use({ "ms-jpq/coq.artifacts" })
+		use({ "ms-jpq/coq.thirdparty" })
 		use({
 			"neovim/nvim-lspconfig",
-			requires = "which-key.nvim",
 			after = { "cmp-nvim-lsp" },
 			config = [[require("config.lsp")]],
-			event = "VimEnter",
 		})
 
 		-- Tree-sitter is a parser generator tool and an incremental
@@ -117,7 +114,9 @@ packer.startup({
 		-- the source file is edited.
 		use({
 			"nvim-treesitter/nvim-treesitter",
+			after = "nvim-lspconfig",
 			run = ":TSUpdate",
+			config = [[require('config.treesitter')]],
 		})
 
 		-- Python indent (follows the PEP8 style)
@@ -133,10 +132,9 @@ packer.startup({
 		use({
 			"phaazon/hop.nvim",
 			event = "VimEnter",
+			branch = "v2",
 			config = function()
-				vim.defer_fn(function()
-					require("config.nvim_hop")
-				end, 2000)
+				require("hop").setup()
 			end,
 		})
 
@@ -244,7 +242,10 @@ packer.startup({
 		use({ "Raimondi/delimitMate", event = "InsertEnter" })
 
 		-- Comment plugin
-		use({ "tpope/vim-commentary", event = "VimEnter" })
+		use({
+			"numToStr/Comment.nvim",
+			config = [[require('config.comment')]],
+		})
 
 		-- Multiple cursor plugin like Sublime Text?
 		use("mg979/vim-visual-multi")
@@ -433,10 +434,6 @@ packer.startup({
 		-- if utils.executable("sbcl") then
 		-- 	use("kovisoft/slimv")
 		-- 	use({ "vlime/vlime", rtp = "vim/", ft = { "lisp" } })
-
-		if packer_bootstrap then
-			require("packer").sync()
-		end
 	end,
 	config = {
 		max_jobs = 16,
@@ -492,10 +489,3 @@ api.nvim_create_autocmd({ "BufWritePost" }, {
 		)
 	end,
 })
-
-------------------------------------------------------------------------------
--- I don't know why the config not working, but the following code works.
-local path =
-	string.format("%s/lua/config/%s", vim.fn.stdpath("config"), "lsp.lua")
-local source_cmd = "source " .. path
-vim.cmd(source_cmd)
