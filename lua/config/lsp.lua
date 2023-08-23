@@ -1,7 +1,7 @@
 local fn = vim.fn
 local api = vim.api
-local utils = require("utils")
 local diagnostic = vim.diagnostic
+local utils = require("utils")
 local wk = require("which-key")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local lsp = require("lspconfig")
@@ -107,24 +107,6 @@ local custom_attach = function(client, bufnr)
       hi! link LspReferenceText Visual
       hi! link LspReferenceWrite Visual
     ]])
-
-		local gid =
-			api.nvim_create_augroup("lsp_document_highlight", { clear = true })
-		api.nvim_create_autocmd("CursorHold", {
-			group = gid,
-			buffer = bufnr,
-			callback = function()
-				vim.lsp.buf.document_highlight()
-			end,
-		})
-
-		api.nvim_create_autocmd("CursorMoved", {
-			group = gid,
-			buffer = bufnr,
-			callback = function()
-				vim.lsp.buf.clear_references()
-			end,
-		})
 	end
 end
 
@@ -181,5 +163,32 @@ if utils.executable("lua-language-server") then
 	lsp.lua_ls.setup(coq.lsp_ensure_capabilities({
 		on_attach = custom_attach,
 		capabilities = capabilities,
+		settings = {
+			Lua = {
+				runtime = {
+					-- Tell the language server which version of
+					-- Lua you're using (most likely LuaJIT in the case of Neovim)
+					version = "LuaJIT",
+				},
+				diagnostics = {
+					-- Get the language server to recognize the `vim` global
+					globals = { "vim" },
+				},
+				workspace = {
+					-- Make the server aware of Neovim runtime files,
+					-- see also https://github.com/LuaLS/lua-language-server/wiki
+					-- /Libraries#link-to-workspace .
+					-- Lua-dev.nvim also has similar settings for lua ls,
+					-- https://github.com/folke/neodev.nvim/blob/main/lua/neodev/luals.lua .
+					library = {
+						fn.stdpath("data")
+							.. "/site/pack/packer/opt/emmylua-nvim",
+						fn.stdpath("config"),
+					},
+					maxPreload = 2000,
+					preloadFileSize = 50000,
+				},
+			},
+		},
 	}))
 end
