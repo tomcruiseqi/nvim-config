@@ -306,101 +306,85 @@ packer.startup {
       config = [[require("tmux").setup()]],
     }
 
-    -- Iron allows you to quickly interact with the repl without having to leave your work bufferline.
+    -- Iron allows you to quickly interact with the repl without
+    -- having to leave your work bufferline.
     use { "Vigemus/iron.nvim", config = [[require('config.iron')]] }
 
-    ---------------------------------------------------------------------------
-    --------------------- Find out what causes the text insert of first line.
     -- Asynchronous command execution
-    -- use({ "skywind3000/asyncrun.vim", opt = true, cmd = { "AsyncRun" } })
-    -- use({ "cespare/vim-toml", ft = { "toml" }, branch = "main" })
+    use { "skywind3000/asyncrun.vim", opt = true, cmd = { "AsyncRun" } }
+    use { "cespare/vim-toml", ft = { "toml" }, branch = "main" }
 
-    -- -- Session management plugin
-    -- use({ "tpope/vim-obsession", cmd = "Obsession" })
-
-    -- -- Plugin to make vim plugins.
-    -- use({
-    -- 	"tpope/vim-scriptease",
-    -- 	cmd = { "Scriptnames", "Message", "Verbose" },
-    -- })
-
-    -- -- Another markdown plugin
-    -- use({ "preservim/vim-markdown", ft = { "markdown" } })
-
-    -- -- Faster footnote generation
-    -- use({ "vim-pandoc/vim-markdownfootnotes", ft = { "markdown" } })
-
-    --------------------- Above has been confirmed: Not related.
+    -- Session management plugin
+    use { "tpope/vim-obsession", cmd = "Obsession" }
 
     -- Debugger plugin
-    -- if vim.g.is_win or vim.g.is_linux then
-    -- 	use({
-    -- 		"sakhnik/nvim-gdb",
-    -- 		run = { "bash install.sh" },
-    -- 		opt = true,
-    -- 		setup = [[vim.cmd('packadd nvim-gdb')]],
-    -- 	})
-    -- end
+    if vim.g.is_win or vim.g.is_linux then
+      use {
+        "sakhnik/nvim-gdb",
+        run = { "bash install.sh" },
+        opt = true,
+        setup = [[vim.cmd('packadd nvim-gdb')]],
+      }
+    end
 
     -- Additional powerful text object for vim,
     -- this plugin should be studied
     -- carefully to use its full power
-    -- use({ "wellle/targets.vim", event = "VimEnter" })
+    use { "wellle/targets.vim", event = "VimEnter" }
+
+    -- Better git log display
+    use {
+      "rbong/vim-flog",
+      requires = "tpope/vim-fugitive",
+      cmd = { "Flog" },
+    }
+
+    use {
+      "christoomey/vim-conflicted",
+      requires = "tpope/vim-fugitive",
+      cmd = { "Conflicted" },
+    }
+
+    use {
+      "ruifm/gitlinker.nvim",
+      requires = "nvim-lua/plenary.nvim",
+      event = "User InGitRepo",
+      config = [[require('config.git-linker')]],
+    }
+
+    -- Better git commit experience
+    use {
+      "rhysd/committia.vim",
+      opt = true,
+      setup = [[vim.cmd('packadd committia.vim')]],
+    }
+
+    -- TODO: needs study.
+    use {
+      "folke/zen-mode.nvim",
+      cmd = "ZenMode",
+      config = [[require('config.zen-mode')]],
+    }
+
+    ---------------------------------------------------------------------------
+    --------------------- Find out what causes the text insert of first line.
+
+    -- use {
+    --   "kevinhwang91/nvim-bqf",
+    --   ft = "qf",
+    --   config = [[require('config.bqf')]],
+    -- }
+    --
+    -- -- Repeat vim motions
+    -- use { "tpope/vim-repeat", event = "VimEnter" }
+    --
+    -- use { "nvim-zh/better-escape.vim", event = { "InsertEnter" } }
 
     -- -- Plugin to manipulate character pairs quickly
     -- use({ "machakann/vim-sandwich", event = "VimEnter" })
 
     -- -- Add indent object for vim (useful for languages like Python)
     -- use({ "michaeljsmith/vim-indent-object", event = "VimEnter" })
-
-    -- use({
-    -- 	"folke/zen-mode.nvim",
-    -- 	cmd = "ZenMode",
-    -- 	config = [[require('config.zen-mode')]],
-    -- })
-
-    -- Better git log display
-    -- use({
-    -- 	"rbong/vim-flog",
-    -- 	requires = "tpope/vim-fugitive",
-    -- 	cmd = { "Flog" },
-    -- })
-
-    -- use({
-    -- 	"christoomey/vim-conflicted",
-    -- 	requires = "tpope/vim-fugitive",
-    -- 	cmd = { "Conflicted" },
-    -- })
-
-    -- use({
-    -- 	"ruifm/gitlinker.nvim",
-    -- 	requires = "nvim-lua/plenary.nvim",
-    -- 	event = "User InGitRepo",
-    -- 	config = [[require('config.git-linker')]],
-    -- })
-
-    -- Distraction-free coding for Neovim >= 0.5.
-    -- use({ "rhysd/vim-grammarous", ft = { "markdown" } })
-
-    -- use({ "chrisbra/unicode.vim", event = "VimEnter" })
-
-    -- Better git commit experience
-    -- use({
-    -- 	"rhysd/committia.vim",
-    -- 	opt = true,
-    -- 	setup = [[vim.cmd('packadd committia.vim')]],
-    -- })
-
-    -- use({
-    -- 	"kevinhwang91/nvim-bqf",
-    -- 	ft = "qf",
-    -- 	config = [[require('config.bqf')]],
-    -- })
-
-    -- Repeat vim motions
-    -- use({ "tpope/vim-repeat", event = "VimEnter" })
-
-    -- use({ "nvim-zh/better-escape.vim", event = { "InsertEnter" } })
 
     -- Manage your yank history
     -- use({
