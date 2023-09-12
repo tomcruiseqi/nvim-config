@@ -189,3 +189,11 @@ if utils.executable("lua-language-server") then
     },
   })
 end
+
+-- Set up golang-language-server.
+if utils.executable("gopls") then
+  lsp.gopls.setup(coq.lsp_ensure_capabilities {
+    on_attach = custom_attach,
+    capabilities = capabilities,
+  })
+end

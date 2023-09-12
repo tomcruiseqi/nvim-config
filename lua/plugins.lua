@@ -270,15 +270,6 @@ packer.startup {
       use { "tmux-plugins/vim-tmux", ft = { "tmux" } }
     end
 
-    -- Modern matchit implementation
-    use {
-      "andymass/vim-matchup",
-      setup = function()
-        -- may set any options here
-        vim.g.matchup_matchparen_offscreen = { method = "popup" }
-      end,
-    }
-
     -- The missing auto-completion for cmdline!
     use { "gelguy/wilder.nvim", opt = true, setup = [[vim.cmd('packadd wilder.nvim')]] }
 
@@ -306,26 +297,8 @@ packer.startup {
       config = [[require("tmux").setup()]],
     }
 
-    -- Iron allows you to quickly interact with the repl without
-    -- having to leave your work bufferline.
-    use { "Vigemus/iron.nvim", config = [[require('config.iron')]] }
-
-    -- Asynchronous command execution
-    use { "skywind3000/asyncrun.vim", opt = true, cmd = { "AsyncRun" } }
-    use { "cespare/vim-toml", ft = { "toml" }, branch = "main" }
-
     -- Session management plugin
     use { "tpope/vim-obsession", cmd = "Obsession" }
-
-    -- Debugger plugin
-    if vim.g.is_win or vim.g.is_linux then
-      use {
-        "sakhnik/nvim-gdb",
-        run = { "bash install.sh" },
-        opt = true,
-        setup = [[vim.cmd('packadd nvim-gdb')]],
-      }
-    end
 
     -- Additional powerful text object for vim,
     -- this plugin should be studied
@@ -337,12 +310,6 @@ packer.startup {
       "rbong/vim-flog",
       requires = "tpope/vim-fugitive",
       cmd = { "Flog" },
-    }
-
-    use {
-      "christoomey/vim-conflicted",
-      requires = "tpope/vim-fugitive",
-      cmd = { "Conflicted" },
     }
 
     use {
@@ -359,53 +326,69 @@ packer.startup {
       setup = [[vim.cmd('packadd committia.vim')]],
     }
 
-    -- TODO: needs study.
+    -- -- TODO: needs study.
     use {
       "folke/zen-mode.nvim",
       cmd = "ZenMode",
       config = [[require('config.zen-mode')]],
     }
 
+    use {
+      "christoomey/vim-conflicted",
+      requires = "tpope/vim-fugitive",
+      cmd = { "Conflicted" },
+    }
+
+    use {
+      "kevinhwang91/nvim-bqf",
+      ft = "qf",
+      config = [[require('config.bqf')]],
+    }
+
+    -- Repeat vim motions
+    use { "tpope/vim-repeat", event = "VimEnter" }
+
+    use { "nvim-zh/better-escape.vim", event = { "InsertEnter" } }
+
+    -- -- Plugin to manipulate character pairs quickly
+    use { "machakann/vim-sandwich", event = "VimEnter" }
+
+    -- -- Add indent object for vim (useful for languages like Python)
+    use { "michaeljsmith/vim-indent-object", event = "VimEnter" }
+
+    -- Manage your yank history
+    use {
+      "gbprod/yanky.nvim",
+      config = [[require('config.yanky')]],
+    }
+
+    -- better UI for some nvim actions
+    use { "stevearc/dressing.nvim" }
+
+    -- Git command inside vim
+    use {
+      "tpope/vim-fugitive",
+      event = "User InGitRepo",
+      config = [[require('config.fugitive')]],
+    }
+
+    -- IDE for Lisp
+    if utils.executable("sbcl") then
+      use("kovisoft/slimv")
+      use { "vlime/vlime", rtp = "vim/", ft = { "lisp" } }
+    end
+
     ---------------------------------------------------------------------------
     --------------------- Find out what causes the text insert of first line.
 
+    -- -- Modern matchit implementation
     -- use {
-    --   "kevinhwang91/nvim-bqf",
-    --   ft = "qf",
-    --   config = [[require('config.bqf')]],
+    --   "andymass/vim-matchup",
+    --   setup = function()
+    --     -- may set any options here
+    --     vim.g.matchup_matchparen_offscreen = { method = "popup" }
+    --   end,
     -- }
-    --
-    -- -- Repeat vim motions
-    -- use { "tpope/vim-repeat", event = "VimEnter" }
-    --
-    -- use { "nvim-zh/better-escape.vim", event = { "InsertEnter" } }
-
-    -- -- Plugin to manipulate character pairs quickly
-    -- use({ "machakann/vim-sandwich", event = "VimEnter" })
-
-    -- -- Add indent object for vim (useful for languages like Python)
-    -- use({ "michaeljsmith/vim-indent-object", event = "VimEnter" })
-
-    -- Manage your yank history
-    -- use({
-    -- 	"gbprod/yanky.nvim",
-    -- 	config = [[require('config.yanky')]],
-    -- })
-
-    -- better UI for some nvim actions
-    -- use({ "stevearc/dressing.nvim" })
-
-    -- Git command inside vim
-    -- use({
-    -- 	"tpope/vim-fugitive",
-    -- 	event = "User InGitRepo",
-    -- 	config = [[require('config.fugitive')]],
-    -- })
-
-    -- IDE for Lisp
-    -- if utils.executable("sbcl") then
-    -- 	use("kovisoft/slimv")
-    -- 	use({ "vlime/vlime", rtp = "vim/", ft = { "lisp" } })
   end,
   config = {
     max_jobs = 16,
