@@ -197,3 +197,11 @@ if utils.executable("gopls") then
     capabilities = capabilities,
   })
 end
+
+-- Set up ruby language server.
+if utils.executable("ruby-lsp") then
+  lsp.gopls.setup(coq.lsp_ensure_capabilities {
+    on_attach = custom_attach,
+    capabilities = capabilities,
+  })
+end

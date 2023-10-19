@@ -9,7 +9,7 @@ require("bufferline").setup {
       icon = "▎", -- this should be omitted if indicator style is not 'icon'
       style = "icon",
     },
-    buffer_close_icon = "",
+    buffer_close_icon = "❌",
     modified_icon = "●",
     close_icon = "",
     left_trunc_marker = "",
@@ -33,7 +33,7 @@ require("bufferline").setup {
 
       return true
     end,
-    show_buffer_icons = false,
+    show_buffer_icons = true,
     show_buffer_close_icons = true,
     show_close_icon = true,
     show_tab_indicators = true,
